@@ -1,0 +1,170 @@
+#Static:
+sudo ip route del 192.168.0.0/16 via 192.168.108.128 dev eth0
+sudo ip route add 192.168.0.0/16 via 192.168.108.8 dev eth0
+
+
+1. Install and configure vmware network settings
+vmnet1 = 192.168.101.0/24
+vmnet2 = 192.168.102.0/24
+vmnet3 = 192.168.103.0/24
+vmnet4 = 192.168.104.0/24
+vmnet5 = 192.168.105.0/24
+vmnet8 = 192.168.108.0/24
+
+
+part2: configuring your ASAfirewall:
+config t
+username admin password pass privilege 15
+
+int management 0/0
+ ip add 192.168.101.7 255.255.255.0
+ nameif mgmt
+ security-level 100
+ no shut
+username admin password pass privilege 15
+passwd pass
+aaa authentication ssh console LOCAL
+ ssh 0.0.0.0 0.0.0.0 mgmt
+ telnet 0.0.0.0 0.0.0.0 mgmt
+ telnet timeout 60
+ ssh timeout 60
+ wr
+
+************************
+show flash:
+
+copy tftp: flash
+remote host:  192.168.101.1
+source file: asdm-openjre-7181-152.bin
+destin filename: enter
+
+***************************
+verify disk0:/asdm-openjre-7181-152.bin
+
+conf t
+ asdm image disk0:/asdm-openjre-7181-152.bin
+
+
+
+
+
+part4:configuring data interfaces:
+DATA INTERFACES:
+config t
+int gi 0/0
+ ip add 192.168.102.8 255.255.255.0
+ nameif inside
+ security-level 100
+ no shut
+int gi 0/1
+ ip add 192.168.103.8 255.255.255.0
+ nameif dmz
+ security-level 50
+ nameif DMZ
+ no shut
+ wr
+sh int ip brief
+
+!internet:
+config t
+int gi 0/2
+ ip add 192.168.108.8 255.255.255.0
+ nameif outside
+ security-level 0
+ no shut
+end
+
+!Internet Access:
+config t
+route outside 0.0.0.0 0.0.0.0 192.168.108.2
+
+!!!ASDM configuration:
+config t
+asdm image disk0:asdm-openjre-7181-152.bin
+http server enable
+http 0.0.0.0 0.0.0.0 mgmt
+http 0.0.0.0 0.0.0.0 inside
+aaa authentication http console LOCAL
+wr
+
+Must put on ASDM target path:
+C:\Windows\System32\wscript.exe invisible.vbs run.bat
+
+
+TASK2: NAT ASA
+config t
+no object network INSIDE-NET
+object network INSIDE-NET
+ subnet 192.168.102.0 255.255.255.0
+ nat (inside,outside) dynamic interface
+ end
+
+
+TASK3:  Modular Policy Framework
+Modify the default MPF application inspection global service policy:
+
+ciscoasa# show run | begin class
+class-map inspection_default
+ match default-inspection-traffic
+!
+!
+policy-map type inspect dns preset_dns_map
+ parameters
+  message-length maximum client auto
+  message-length maximum 512
+  no tcp-inspection
+policy-map global_policy
+ class inspection_default
+  inspect dns preset_dns_map 
+  inspect ftp 
+  inspect h323 h225 
+  inspect h323 ras 
+  inspect rsh 
+  inspect rtsp 
+  inspect esmtp 
+  inspect sqlnet 
+  inspect skinny  
+  inspect sunrpc 
+  inspect xdmcp 
+
+allow ping/icmp to be inspected and hence allowed:
+config t
+policy-map global_policy
+ class inspection_default
+  inspect icmp
+show run policy-map
+
+TASK4: Configuring DHCP, AAA, and SSH:
+config t
+dhcpd address 192.168.103.100-192.168.103.150 dmz
+dhcpd dns 8.8.8.8
+dhcpd option 3 ip 192.168.103.8
+dhcpd enable dmz
+show run dhcpd
+
+TASK4: Configuring DMZ, Static NAT, and ACLs
+config t
+int gi 0/1
+ ip add 192.168.103.8 255.255.255.0
+ nameif dmz
+ security-level 50
+ nameif DMZ
+ no shut
+
+task5: Configure static NAT to the DMZ server using a network object
+config t
+no object network dmz-server
+object network dmz-server
+ host 192.168.103.100
+ nat (dmz,outside) static 192.168.108.100
+ access-list OUTSIDE-DMZ permit ip any host 192.168.103.100
+ access-group OUTSIDE-DMZ in interface outside
+
+
+
+
+
+
+
+
+
