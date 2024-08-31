@@ -34,7 +34,7 @@ aaa authentication ssh console LOCAL
 show flash:
 
 copy tftp: flash
-remote host:  192.168.101.1
+remote host:  192.168.101.1 (source of file)
 source file: asdm-openjre-7181-152.bin
 destin filename: enter
 
